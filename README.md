@@ -1,6 +1,6 @@
 # kiddokip Mobile App
 
-![App Logo]  /Users/daniel/Desktop/projects/kiddokip/assets/logo.svg
+assets/logo.png
 *A digital solution for streamlined child registration and crèche management in South Africa*
 
 ## Overview
