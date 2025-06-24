@@ -1,33 +1,33 @@
-# kiddokip Mobile App
+# KiddoKip Mobile App
 
-assets/logo.png
+![KiddoKip Logo](assets/logo.png)  
 *A digital solution for streamlined child registration and crèche management in South Africa*
 
-## Overview
+## 📌 Overview
 
-kiddokip replaces outdated Excel-based systems with a secure mobile platform for:
+KiddoKip replaces outdated Excel-based systems with a secure mobile platform for:
 
 - ✅ **Centralized child registration**  
 - 🔄 **Real-time data sync across districts**  
 - 🚨 **Duplicate detection & data validation**  
 - 📊 **Automated government reporting**
 
-## Key Features
+## 🎯 Key Features
 
 | Feature | Description |
 |---------|-------------|
 | 👶 **Child Profiles** | Digital records with photos, birthdates, ID numbers, and medical notes |
 | ↔️ **Transfer Tool** | Seamless child transfers between crèches with audit trails |
 | 📱 **Offline Mode** | Work without internet - data syncs when connection resumes |
-| 🔍 **Quick Search** | Find children by name, ID
+| 🔍 **Quick Search** | Find children by name or ID |
 | 📈 **Dashboard** | Real-time stats on enrollments, demographics, and transfers |
 
 ## 🛠️ Technical Stack
 
 - **Frontend**: React Native (iOS & Android)  
-- **Backend**: Firebase/Firestore (Realtime DB + Authentication)  + nodeJS
+- **Backend**: Node.js + Firebase/Firestore (Realtime DB + Authentication)  
 - **Security**: AES-256 encryption for sensitive data  
-- **Integrations**: National ID verification API (not to be included as yet.)
+- **Future Integration**: National ID verification API (planned for Phase 2)  
 
 ## 📲 Screenshots
 
@@ -46,8 +46,5 @@ kiddokip replaces outdated Excel-based systems with a secure mobile platform for
 ### For Developers
 
 ```bash
-# Development setup
-https://github.com/washington786/kiddokip
-cd kiddokip
-npm install
-expo start
+# Clone repository
+git clone https://github.com/washington786/kiddokip
