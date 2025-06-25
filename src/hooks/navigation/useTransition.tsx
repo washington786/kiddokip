@@ -22,8 +22,11 @@ const useTransition = () => {
     function walkthrough() {
         navigation.navigate("walkthrough");
     }
+    function createCreche() {
+        navigation.navigate("createCreche");
+    }
 
-    return { onBack, login, register, walkthrough, getStarted }
+    return { onBack, login, register, walkthrough, getStarted, createCreche }
 }
 
 export default useTransition
