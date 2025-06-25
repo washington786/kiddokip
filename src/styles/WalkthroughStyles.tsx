@@ -32,11 +32,11 @@ export const WalkthroughStyles = StyleSheet.create({
         color: colors.gray[700]
     },
     description: {
-        fontSize: 16,
+        fontSize: 15,
         textAlign: 'center',
         paddingHorizontal: 20,
         color: colors.slate[400],
-        fontFamily: `${appFonts.extaLight}`
+        fontFamily: `${appFonts.light}`
     },
     footer: {
         paddingBottom: 30,

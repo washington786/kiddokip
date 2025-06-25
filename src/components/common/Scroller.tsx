@@ -1,16 +1,17 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import React, { FC, ReactNode } from "react";
 import colors from "../../config/colors";
 
 interface prop {
   children: ReactNode;
+  style?: StyleProp<ViewStyle>
 }
-const Scroller: FC<prop> = ({ children }) => {
+const Scroller: FC<prop> = ({ children, style }) => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      style={styles.con}
-      contentContainerStyle={{ flexGrow: 1 }}
+      style={[styles.con]}
+      contentContainerStyle={[style, { flexGrow: 1 }]}
     >
       {children}
     </ScrollView>

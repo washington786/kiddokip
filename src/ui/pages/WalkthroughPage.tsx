@@ -9,18 +9,20 @@ import WalkthroughFooter from '../../components/modules/authentication/Walkthrou
 import { slides } from '../../utils/slides';
 import WalkthroughHeader from '../../components/modules/authentication/WalkthroughHeader';
 import { WalkthroughStyles as styles } from '../../styles';
+import useTransition from '@/hooks/navigation/useTransition';
 
 const WalkthroughPage: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
+    const { getStarted } = useTransition();
 
     const handleNext = () => {
         if (currentIndex < slides.length - 1) {
             flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
         }
-        // else {
-        //     navigation.navigate('Home' as never); // Replace 'Home' with your main screen name
-        // }
+        else {
+            getStarted()
+        }
     };
 
     const handlePrevious = () => {
@@ -37,7 +39,7 @@ const WalkthroughPage: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <WalkthroughHeader />
+            <WalkthroughHeader onPress={getStarted} />
             <FlatList
                 ref={flatListRef}
                 data={slides}

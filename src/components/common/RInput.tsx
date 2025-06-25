@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
     minHeight: 50,
     borderWidth: 1,
     borderColor: colors.gray[200],
-    // marginHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,

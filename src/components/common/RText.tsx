@@ -1,14 +1,15 @@
-import { StyleSheet } from "react-native";
 import React, { FC } from "react";
-import { Text } from "react-native-paper";
+import { StyleProp, StyleSheet, TextStyle, TextProps as TextPaperProps, Text } from "react-native";
 import colors from "../../config/colors";
 
-interface prop {
+interface Props extends TextPaperProps {
   title: string;
+  style?: StyleProp<TextStyle>;
 }
-const RText: FC<prop> = ({ title }) => {
+
+const RText: FC<Props> = ({ title, style, ...props }) => {
   return (
-    <Text variant="labelSmall" style={styles.txt}>
+    <Text style={[styles.txt, style]} {...props}>
       {title}
     </Text>
   );

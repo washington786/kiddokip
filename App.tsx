@@ -1,7 +1,7 @@
 import useLoadAppFonts from '@/hooks/loadFonts/useLoadAppFonts';
-import ProviderWraper from './src/components/common/ProviderWraper';
-import WalkthroughPage from './src/ui/pages/WalkthroughPage';
 import { RSplash } from '@/components/common';
+import ProviderWraper from '@/components/common/ProviderWraper';
+import MainNavigation from '@/navigation/MainNavigation';
 
 export default function App() {
 
@@ -10,10 +10,9 @@ export default function App() {
   if (!loadedApplicationFonts) return <RSplash />
   /* end  */
 
-
   return (
     <ProviderWraper>
-      <WalkthroughPage />
+      <MainNavigation />
     </ProviderWraper>
   );
 }

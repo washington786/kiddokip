@@ -1,11 +1,11 @@
 import { StyleSheet, View } from 'react-native'
-import React from 'react'
+import React, { FC } from 'react'
 import { Text } from 'react-native-paper'
 
-const WalkthroughHeader = () => {
+const WalkthroughHeader: FC<{ onPress(): void }> = ({ onPress }) => {
     return (
         <View style={styles.con}>
-            <Text onPress={() => { }} variant='labelMedium'>Skip</Text>
+            <Text onPress={onPress} variant='labelMedium'>Skip</Text>
         </View>
     )
 }

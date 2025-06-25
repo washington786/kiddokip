@@ -1,12 +1,29 @@
+import { navigationTypes } from '@/types/navigationTypes';
 import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const useTransition = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<navigationTypes>>();
 
     function onBack() {
         navigation.goBack();
     }
-    return { onBack }
+
+    function getStarted() {
+        navigation.replace("login")
+    }
+
+    function login() {
+        navigation.navigate("login");
+    }
+    function register() {
+        navigation.navigate("register");
+    }
+    function walkthrough() {
+        navigation.navigate("walkthrough");
+    }
+
+    return { onBack, login, register, walkthrough, getStarted }
 }
 
 export default useTransition

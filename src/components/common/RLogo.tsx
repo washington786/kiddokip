@@ -7,7 +7,7 @@ interface prop {
 const RLogo: FC<prop> = ({ stylesLogo }) => {
   return (
     <Image
-      source={require("../../../assets/logo.svg")}
+      source={require("../../../assets/logo.png")}
       resizeMode="contain"
       resizeMethod="resize"
       style={[styles.logo, stylesLogo]}
