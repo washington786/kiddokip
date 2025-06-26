@@ -1,4 +1,5 @@
 import RButton from "./RButton";
+import RCol from "./RCol";
 import RDivider from "./RDivider";
 import RErrorMessage from "./RErrorMessage";
 import RImageCon from "./RImageCon";
@@ -37,5 +38,5 @@ export {
   RNetworkAlert,
   RErrorMessage,
   RNotification,
-  RSplash, RKeyboardView, RRow
+  RSplash, RKeyboardView, RRow, RCol
 };

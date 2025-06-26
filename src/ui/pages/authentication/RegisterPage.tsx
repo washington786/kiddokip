@@ -6,7 +6,7 @@ import { Text } from 'react-native-paper'
 import useTransition from '@/hooks/navigation/useTransition'
 
 const RegisterPage = () => {
-    const { login } = useTransition();
+    const { login, createCreche } = useTransition();
     return (
         <Scroller style={styles.con}>
             <RLogo stylesLogo={[styles.logo, styles.spaceBottom]} />
@@ -19,7 +19,7 @@ const RegisterPage = () => {
                 <RInput placeholder='Confirm Password' customStyle={styles.input} placeholderTextColor={colors.gray[300]} secureTextEntry />
 
 
-                <RButton title='Create Account' onPressButton={() => { }} styleBtn={styles.btn} />
+                <RButton title='Create Account' onPressButton={createCreche} styleBtn={styles.btn} />
 
                 <RRow style={[styles.center, styles.spaceTop]}>
                     <Text variant='labelSmall'>Already have an account?</Text>
