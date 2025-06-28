@@ -3,4 +3,9 @@ export type navigationTypes = {
     register: undefined;
     walkthrough: undefined;
     createCreche: undefined;
+    home: undefined;
+    reports: undefined;
+    profile: undefined;
+    children: undefined;
+    app: undefined;
 }

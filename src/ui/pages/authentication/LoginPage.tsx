@@ -7,7 +7,7 @@ import colors from '@/colors';
 import useTransition from '@/hooks/navigation/useTransition';
 
 const LoginPage = () => {
-    const { register } = useTransition();
+    const { register, goToApp } = useTransition();
     return (
         <Scroller style={styles.con}>
             <RLogo stylesLogo={[styles.logo, styles.spaceBottom]} />
@@ -16,7 +16,7 @@ const LoginPage = () => {
                 <RInput placeholder='Password' customStyle={styles.input} placeholderTextColor={colors.gray[300]} />
                 <Text variant='labelLarge' style={styles.fgTxt}>Forgot Password</Text>
 
-                <RButton title='Sign In' onPressButton={() => { }} styleBtn={styles.btn} />
+                <RButton title='Sign In' onPressButton={goToApp} styleBtn={styles.btn} />
 
                 <RRow style={[styles.center, styles.spaceTop]}>
                     <Text variant='labelSmall'>Don't have an account?</Text>

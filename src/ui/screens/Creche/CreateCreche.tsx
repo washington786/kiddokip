@@ -2,9 +2,9 @@ import { View, Text, TouchableOpacity, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { Picker } from '@react-native-picker/picker';
 import { RegistrationHeader, Steps } from '@/components/modules/authentication';
-import { RCol, RInput, RKeyboardView, RRow, RText, Scroller } from '@/components/common';
+import { RChildWrapper, RCol, RInput, RKeyboardView, RRow, RText, Scroller } from '@/components/common';
 import { Chip } from 'react-native-paper';
-import { ageGroups, districts, mainDistricts, provinces } from '@/utils/data';
+import { ageGroups, facilityTypes, main_manicipalities, mainDistricts, provinces } from '@/utils/data';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from "@expo/vector-icons"
 import useTransition from '@/hooks/navigation/useTransition';
@@ -12,9 +12,6 @@ import { CrecheStyle as styles } from '@/styles';
 
 const CreateCrechePage = () => {
     const [step, setStep] = useState(1);
-
-    // const provinces = ['Western Cape', 'Gauteng', 'KwaZulu-Natal'];
-    const facilityTypes = ['Home-based', 'Center-based', 'School-affiliated'];
 
     const [openingHours, setOpeningHours] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
@@ -32,12 +29,9 @@ const CreateCrechePage = () => {
 
     const [selectedProvince, setProvince] = useState();
     const [district, setDistrict] = useState<string[]>([]);
+    const [manucipality, setManucipality] = useState<string[]>([]);
 
     const { login } = useTransition();
-
-    console.log(selectedProvince);
-    console.log(district);
-
 
     return (
         <Scroller style={styles.container}>
@@ -74,6 +68,7 @@ const CreateCrechePage = () => {
                         <Picker onValueChange={(val: any) => {
                             setProvince(val)
                             setDistrict(mainDistricts[val] || [])
+                            setManucipality(main_manicipalities[val] || [])
                         }}>
                             <Picker.Item label="Select Province" value="" />
                             {provinces.map(province => (
@@ -91,7 +86,32 @@ const CreateCrechePage = () => {
                         </Picker>
                     </View>
 
-                    <RInput placeholder='Physical Address' style={styles.input} />
+                    <View style={styles.pickerContainer}>
+                        <Picker>
+                            <Picker.Item label="Select Municipality" value="" />
+                            {
+                                manucipality.map((manucipality, index) => <Picker.Item label={manucipality} value={district} key={`${index}-${district}`} />)
+                            }
+                        </Picker>
+                    </View>
+
+                    <RCol>
+                        <RInput placeholder='Street Address' style={[styles.input]} />
+                        <RInput placeholder='Village/Township' style={[styles.input]} />
+                        <RInput placeholder='Town/City' style={styles.input} />
+                        <RInput placeholder='Local Circuit' style={styles.input} />
+                        <RRow style={styles.rowGap}>
+                            <RChildWrapper style={styles.wrapperSpace}>
+                                <RInput placeholder='Ward No' style={[styles.input, { minWidth: 200 }]} />
+                            </RChildWrapper>
+                            <RChildWrapper style={styles.wrapperSpace}>
+                                <RInput placeholder='Zip Code' style={[styles.input, { flex: 1 }]} />
+                            </RChildWrapper>
+                        </RRow>
+                    </RCol>
+
+
+
                 </View>
             )}
 

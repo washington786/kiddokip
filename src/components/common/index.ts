@@ -16,6 +16,7 @@ import RSwitch from "./RSwitch";
 import RText from "./RText";
 import RUpload from "./RUpload";
 import RWrapper from "./RWrapper";
+import RWrapperInput from "./RWrapperInput";
 import SafeArea from "./SafeArea";
 import Scroller from "./Scroller";
 
@@ -38,5 +39,9 @@ export {
   RNetworkAlert,
   RErrorMessage,
   RNotification,
-  RSplash, RKeyboardView, RRow, RCol
+  RSplash,
+  RKeyboardView,
+  RRow,
+  RCol,
+  RWrapperInput as RChildWrapper
 };

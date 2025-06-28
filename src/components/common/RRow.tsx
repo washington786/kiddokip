@@ -17,6 +17,8 @@ export default RRow
 
 const styles = StyleSheet.create({
     con: {
-        flexDirection: "row"
+        flexDirection: "row",
+        flexGrow: 1,
+        width: "100%"
     }
 })

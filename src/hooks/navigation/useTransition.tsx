@@ -16,17 +16,24 @@ const useTransition = () => {
     function login() {
         navigation.navigate("login");
     }
+
     function register() {
         navigation.navigate("register");
     }
+
     function walkthrough() {
         navigation.navigate("walkthrough");
     }
+
     function createCreche() {
         navigation.navigate("createCreche");
     }
 
-    return { onBack, login, register, walkthrough, getStarted, createCreche }
+    function goToApp() {
+        navigation.navigate("app");
+    }
+
+    return { onBack, login, register, walkthrough, getStarted, createCreche, goToApp }
 }
 
 export default useTransition

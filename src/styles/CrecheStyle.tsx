@@ -90,5 +90,11 @@ export const CrecheStyle = StyleSheet.create({
     },
     picker: {
         width: Platform.OS === 'ios' ? '100%' : undefined,
+    },
+    rowGap: {
+        gap: 4
+    },
+    wrapperSpace: {
+        flex: 1
     }
 });
