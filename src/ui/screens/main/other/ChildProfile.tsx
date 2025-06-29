@@ -5,14 +5,19 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Image,
     Modal,
-    Alert,
-    Share,
-    ActivityIndicator
+    Alert
 } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { navigationTypes } from '@/types/navigationTypes';
+import useTransition from '@/hooks/navigation/useTransition';
+import { RCol, RDivider, RText, Scroller } from '@/components/common';
+import { RTopBar } from '@/components/modules/application/children';
+import colors from '@/config/colors';
+import { Parent } from '@/types/parent';
+import { Button } from 'react-native-paper';
+import { PickerStyle } from '@/styles';
 
 type Child = {
     id: string;
@@ -29,30 +34,22 @@ type Child = {
         name: string;
         contact: string;
         relationship: string;
+        id: any
     }[];
 };
 
-type RootStackParamList = {
-    ChildProfile: { childId: string };
-    EditChild: { childId: string };
-    // ... other screens
-};
+const ChildProfileScreen = () => {
 
-type ChildProfileScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    'ChildProfile'
->;
-
-interface ChildProfileScreenProps {
-    navigation: ChildProfileScreenNavigationProp;
-    route: { params: { childId: string } };
-}
-
-const ChildProfileScreen: React.FC<ChildProfileScreenProps> = ({ navigation, route }) => {
     const [child, setChild] = useState<Child | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [showMedicalModal, setShowMedicalModal] = useState(false);
     const [showTransferModal, setShowTransferModal] = useState(false);
+
+    const { params } = useRoute<RouteProp<navigationTypes, "ChildProfile">>()
+    const { childId } = params;
+
+    const { goToEditChild, onBack } = useTransition()
 
     // Fetch child data (mock - replace with API call)
     useEffect(() => {
@@ -63,7 +60,7 @@ const ChildProfileScreen: React.FC<ChildProfileScreenProps> = ({ navigation, rou
 
                 // Mock data - replace with actual data fetching
                 const mockChild: Child = {
-                    id: route.params.childId,
+                    id: childId,
                     firstName: 'Lindiwe',
                     lastName: 'Mkhize',
                     age: 3,
@@ -77,12 +74,14 @@ const ChildProfileScreen: React.FC<ChildProfileScreenProps> = ({ navigation, rou
                         {
                             name: 'Nozipho Mkhize',
                             contact: '+27711234567',
-                            relationship: 'Mother'
+                            relationship: 'Mother',
+                            id: "2"
                         },
                         {
                             name: 'Thabo Mkhize',
                             contact: '+27717654321',
-                            relationship: 'Father'
+                            relationship: 'Father',
+                            id: "13"
                         }
                     ]
                 };
@@ -96,212 +95,164 @@ const ChildProfileScreen: React.FC<ChildProfileScreenProps> = ({ navigation, rou
         };
 
         fetchChild();
-    }, [route.params.childId]);
+    }, [childId]);
 
-    const handleEdit = () => {
-        navigation.navigate('EditChild', { childId: child?.id || '' });
-    };
 
     const handleTransfer = () => {
         setShowTransferModal(true);
     };
 
     const confirmTransfer = () => {
-        // Implement transfer logic here
         setShowTransferModal(false);
         Alert.alert('Transfer Initiated', 'The transfer process has been started');
     };
 
-    const shareProfile = async () => {
-        try {
-            await Share.share({
-                message: `Child Profile: ${child?.firstName} ${child?.lastName}\nAge: ${child?.age}\nID: ${child?.idNumber}`,
-                title: 'Child Profile'
-            });
-        } catch (error) {
-            Alert.alert('Error', 'Failed to share profile');
-        }
-    };
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#3b82f6" />
-            </View>
-        );
-    }
-
-    if (!child) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text>Child not found</Text>
-            </View>
-        );
-    }
-
     return (
-        <ScrollView style={styles.container}>
+        <>
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.title}>Child Profile</Text>
-                <View style={styles.headerIcons}>
-                    <TouchableOpacity onPress={shareProfile} style={styles.iconButton}>
-                        <Ionicons name="share-social" size={20} color="#3b82f6" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleEdit} style={styles.iconButton}>
-                        <Ionicons name="pencil" size={20} color="#3b82f6" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Profile Section */}
-            <View style={styles.profileSection}>
-                <View style={styles.photoContainer}>
-                    {child.photo ? (
-                        <Image source={{ uri: child.photo }} style={styles.photo} />
-                    ) : (
-                        <View style={styles.photoPlaceholder}>
-                            <Ionicons name="person" size={50} color="#9ca3af" />
-                        </View>
-                    )}
-                </View>
-
-                <View style={styles.nameContainer}>
-                    <Text style={styles.name}>{child.firstName} {child.lastName}</Text>
-                    <Text style={styles.details}>
-                        {child.age} years • {child.gender} • {child.status}
-                    </Text>
-                </View>
-            </View>
-
-            {/* Status Badge */}
-            <View style={[
-                styles.statusBadge,
-                child.status === 'Active' ? styles.activeBadge :
-                    child.status === 'Transferred' ? styles.transferredBadge : styles.graduatedBadge
-            ]}>
-                <Text style={styles.statusText}>{child.status}</Text>
-            </View>
-
-            {/* Basic Information */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Basic Information</Text>
-                <View style={styles.infoRow}>
-                    <Ionicons name="calendar" size={20} color="#6b7280" />
-                    <Text style={styles.infoText}>Date of Birth: {new Date(child.enrollmentDate).toLocaleDateString()}</Text>
-                </View>
-                <View style={styles.infoRow}>
-                    <Ionicons name="finger-print" size={20} color="#6b7280" />
-                    <Text style={styles.infoText}>ID Number: {child.idNumber}</Text>
-                </View>
-                <View style={styles.infoRow}>
-                    <Ionicons name="school" size={20} color="#6b7280" />
-                    <Text style={styles.infoText}>Enrolled: {new Date(child.enrollmentDate).toLocaleDateString()}</Text>
-                </View>
-            </View>
-
-            {/* Parents/Guardians */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Parents/Guardians</Text>
-                {child.parents.map((parent, index) => (
-                    <View key={index} style={styles.parentCard}>
-                        <Text style={styles.parentRole}>{parent.relationship}</Text>
-                        <Text style={styles.parentName}>{parent.name}</Text>
-                        <View style={styles.contactRow}>
-                            <Ionicons name="call" size={16} color="#6b7280" />
-                            <Text style={styles.contactText}>{parent.contact}</Text>
+            <RTopBar title='Child Profile' isRight={true} onRightIconPress={() => goToEditChild({ childId: childId })} />
+            <RDivider />
+            <Scroller>
+                <RCol style={{ alignItems: "center", justifyContent: "space-between", position: "relative", minHeight: 60, backgroundColor: colors.slate[50], padding: 6, marginVertical: 8 }}>
+                    {/* Profile Section */}
+                    <View style={styles.profileSection}>
+                        <View style={styles.nameContainer}>
+                            <Text style={styles.name}>{child?.firstName} {child?.lastName}</Text>
+                            <Text style={styles.details}>
+                                {child?.age} years • {child?.gender} • {child?.status}
+                            </Text>
                         </View>
                     </View>
-                ))}
-            </View>
 
-            {/* Medical Information */}
-            <View style={styles.section}>
-                <View style={styles.sectionHeaderRow}>
-                    <Text style={styles.sectionTitle}>Medical Information</Text>
-                    <TouchableOpacity onPress={() => setShowMedicalModal(true)}>
-                        <Text style={styles.viewAllText}>View Details</Text>
-                    </TouchableOpacity>
+                    {/* Status Badge */}
+                    <View style={[
+                        styles.statusBadge,
+                        child?.status === 'Active' ? styles.activeBadge :
+                            child?.status === 'Transferred' ? styles.transferredBadge : styles.graduatedBadge
+                    ]}>
+                        <Text style={styles.statusText}>{child?.status}</Text>
+                    </View>
+                </RCol>
+
+                {/* Basic Information */}
+                <View style={styles.section}>
+                    <RDivider />
+                    <Text style={styles.sectionTitle}>Basic Information</Text>
+                    <BasicItem icon={'calendar'} title={`Date of Birth: ${new Date(child?.enrollmentDate as any).toLocaleDateString()}`} />
+                    <BasicItem icon={'finger-print'} title={`ID Number: ${child?.idNumber}`} />
+                    <BasicItem icon={'school'} title={`Enrolled: ${new Date(child?.enrollmentDate as any).toLocaleDateString()}`} />
                 </View>
-                <Text style={styles.medicalSummary} numberOfLines={3}>
-                    {child.medicalNotes || 'No medical information available'}
-                </Text>
-            </View>
 
-            {/* Action Buttons */}
-            <View style={styles.actionButtons}>
-                <TouchableOpacity
-                    style={[styles.actionButton, styles.transferButton]}
-                    onPress={handleTransfer}
-                >
-                    <MaterialIcons name="transfer-within-a-station" size={24} color="#fff" />
-                    <Text style={styles.actionButtonText}>Transfer</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.actionButton, styles.contactButton]}
-                    onPress={() => Alert.alert('Contact', 'This would initiate contact with parents')}
-                >
-                    <FontAwesome name="phone" size={20} color="#fff" />
-                    <Text style={styles.actionButtonText}>Contact</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Parents/Guardians */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Parents/Guardians</Text>
+                    {child?.parents.map((parent, index) => (
+                        <ParentCard parent={parent} key={index} />
+                    ))}
+                </View>
 
-            {/* Medical Notes Modal */}
-            <Modal
-                visible={showMedicalModal}
-                animationType="slide"
-                transparent={false}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Medical Information</Text>
-                        <TouchableOpacity onPress={() => setShowMedicalModal(false)}>
-                            <Ionicons name="close" size={24} color="#333" />
+                {/* Medical Information */}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeaderRow}>
+                        <Text style={styles.sectionTitle}>Medical Information</Text>
+                        <TouchableOpacity onPress={() => setShowMedicalModal(true)}>
+                            {/* <Text style={styles.viewAllText}>View Details</Text> */}
+                            <RText title='View Details' />
                         </TouchableOpacity>
                     </View>
-                    <ScrollView style={styles.modalContent}>
-                        <Text style={styles.medicalDetails}>
-                            {child.medicalNotes || 'No medical information available'}
-                        </Text>
-                    </ScrollView>
+                    <Text style={styles.medicalSummary} numberOfLines={3}>
+                        {child?.medicalNotes || 'No medical information available'}
+                    </Text>
                 </View>
-            </Modal>
 
-            {/* Transfer Modal */}
-            <Modal
-                visible={showTransferModal}
-                animationType="fade"
-                transparent={true}
-            >
-                <View style={styles.transferModalContainer}>
-                    <View style={styles.transferModalContent}>
-                        <Text style={styles.transferModalTitle}>Transfer Child</Text>
-                        <Text style={styles.transferModalText}>
-                            Are you sure you want to transfer {child.firstName} to another crèche?
-                        </Text>
-                        <View style={styles.transferModalButtons}>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton]}
-                                onPress={() => setShowTransferModal(false)}
-                            >
-                                <Text style={styles.modalButtonText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.confirmButton]}
-                                onPress={confirmTransfer}
-                            >
-                                <Text style={styles.modalButtonText}>Confirm</Text>
+                {/* Action Buttons */}
+                <View style={styles.actionButtons}>
+                    <Button theme={{ colors: { primary: colors.primary[500] } }} mode='contained' style={PickerStyle.btn} onPress={handleTransfer}>Transfer Child</Button>
+                </View>
+
+                {/* Medical Notes Modal */}
+                <Modal
+                    visible={showMedicalModal}
+                    animationType="slide"
+                    transparent={false}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Medical Information</Text>
+                            <TouchableOpacity onPress={() => setShowMedicalModal(false)}>
+                                <Ionicons name="close" size={24} color="#333" />
                             </TouchableOpacity>
                         </View>
+                        <ScrollView style={styles.modalContent}>
+                            <Text style={styles.medicalDetails}>
+                                {child?.medicalNotes || 'No medical information available'}
+                            </Text>
+                        </ScrollView>
                     </View>
-                </View>
-            </Modal>
-        </ScrollView>
+                </Modal>
+
+                {/* Transfer Modal */}
+                <Modal
+                    visible={showTransferModal}
+                    animationType="fade"
+                    transparent={true}
+                >
+                    <View style={styles.transferModalContainer}>
+                        <View style={styles.transferModalContent}>
+                            <Text style={styles.transferModalTitle}>Transfer Child</Text>
+                            <Text style={styles.transferModalText}>
+                                Are you sure you want to transfer {child?.firstName} to another crèche?
+                            </Text>
+                            <View style={styles.transferModalButtons}>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, styles.cancelButton]}
+                                    onPress={() => setShowTransferModal(false)}
+                                >
+                                    <Text style={styles.modalButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, styles.confirmButton]}
+                                    onPress={confirmTransfer}
+                                >
+                                    <Text style={styles.modalButtonText}>Confirm</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+            </Scroller>
+        </>
     );
 };
+
+interface props {
+    title: string | any;
+    icon: any;
+}
+function BasicItem({ icon, title }: props) {
+    return (
+        <View style={styles.infoRow}>
+            <Ionicons name={icon} size={20} color="#6b7280" />
+            <Text style={styles.infoText}>{title}</Text>
+        </View>
+    )
+}
+
+interface parent {
+    parent: Parent
+}
+function ParentCard({ parent }: parent) {
+    return (
+        <View style={styles.parentCard} >
+            <Text style={styles.parentRole}>{parent.relationship}</Text>
+            <Text style={styles.parentName}>{parent.name}</Text>
+            <View style={styles.contactRow}>
+                <Ionicons name="call" size={16} color="#6b7280" />
+                <Text style={styles.contactText}>{parent.contact}</Text>
+            </View>
+        </View >
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -340,7 +291,7 @@ const styles = StyleSheet.create({
     profileSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
     },
     photoContainer: {
         marginRight: 16,
@@ -372,12 +323,12 @@ const styles = StyleSheet.create({
         color: '#6b7280',
     },
     statusBadge: {
-        alignSelf: 'flex-start',
+        position: "absolute",
+        top: 10,
+        right: 10,
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 12,
-        marginLeft: 20,
-        marginBottom: 20,
+        borderRadius: 5,
     },
     activeBadge: {
         backgroundColor: '#dcfce7',
@@ -394,7 +345,7 @@ const styles = StyleSheet.create({
     },
     section: {
         paddingHorizontal: 20,
-        paddingVertical: 16,
+        paddingTop: 16,
         borderBottomWidth: 1,
         borderBottomColor: '#f3f4f6',
     },

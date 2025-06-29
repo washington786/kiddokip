@@ -10,8 +10,14 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RTopBar, RTransferItem } from '@/components/modules/application/children';
+import { navigationTypes } from '@/types/navigationTypes';
+import useTransition from '@/hooks/navigation/useTransition';
+import { RCol, RInput } from '@/components/common';
+import { Button, Searchbar } from 'react-native-paper';
+import colors from '@/config/colors';
+import { PickerStyle } from '@/styles';
 
 // Types
 type Crèche = {
@@ -21,35 +27,17 @@ type Crèche = {
     distance?: number;
 };
 
-type RootStackParamList = {
-    TransferChild: {
-        childIds: string[];
-        currentCrècheId: string;
-    };
-    // ... other screen definitions
-};
-
-type TransferChildScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    'TransferChild'
->;
-
-type TransferChildScreenRouteProp = RouteProp<RootStackParamList, 'TransferChild'>;
-
-interface TransferChildScreenProps {
-    navigation: TransferChildScreenNavigationProp;
-    route: TransferChildScreenRouteProp;
-}
-
-const TransferChildScreen: React.FC<TransferChildScreenProps> = ({ navigation, route }) => {
-    const { childIds, currentCrècheId } = route.params;
+const TransferChildScreen = () => {
+    const route = useRoute<RouteProp<navigationTypes, "TransferChildren">>();
+    const { childId, currentCrecheId } = route.params;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCrèche, setSelectedCrèche] = useState<Crèche | null>(null);
     const [transferReason, setTransferReason] = useState('');
     const [loading, setLoading] = useState(false);
     const [crèches, setCrèches] = useState<Crèche[]>([]);
 
-    // Fetch nearby crèches (mock data - replace with API call)
+    const { onBack } = useTransition()
+
     useEffect(() => {
         setLoading(true);
         // Simulate API call
@@ -59,28 +47,27 @@ const TransferChildScreen: React.FC<TransferChildScreenProps> = ({ navigation, r
                 { id: '3', name: 'Sunshine Daycare', district: 'District B', distance: 2.5 },
                 { id: '4', name: 'Little Stars', district: 'District A', distance: 0.8 },
                 { id: '5', name: 'Tiny Tots', district: 'District C', distance: 3.1 },
-            ].filter(c => c.id !== currentCrècheId));
+            ].filter(c => c.id !== currentCrecheId));
             setLoading(false);
         }, 1000);
-    }, [currentCrècheId]);
+    }, [currentCrecheId]);
 
     const handleTransfer = () => {
         if (!selectedCrèche) {
             Alert.alert('Error', 'Please select a crèche');
             return;
         }
-
         setLoading(true);
         // Simulate transfer API call
         setTimeout(() => {
             setLoading(false);
             Alert.alert(
                 'Transfer Successful',
-                `${childIds.length} child(ren) transferred to ${selectedCrèche.name}`,
+                `${childId.length} child(ren) transferred to ${selectedCrèche.name}`,
                 [
                     {
                         text: 'OK',
-                        onPress: () => navigation.goBack()
+                        onPress: onBack
                     }
                 ]
             );
@@ -93,93 +80,61 @@ const TransferChildScreen: React.FC<TransferChildScreenProps> = ({ navigation, r
     );
 
     return (
-        <View style={styles.container}>
+        <>
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.title}>Transfer Child{childIds.length > 1 ? 'ren' : ''}</Text>
-                <View style={{ width: 24 }} /> {/* Spacer */}
-            </View>
+            <RTopBar title={`Transfer Children`} />
 
-            {/* Transfer Summary */}
-            <View style={styles.summaryCard}>
-                <Text style={styles.summaryText}>
-                    Transferring {childIds.length} child{childIds.length > 1 ? 'ren' : ''}
-                </Text>
-            </View>
+            <View style={styles.container}>
 
-            {/* Search */}
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
-                <TextInput
-                    placeholder="Search crèches..."
-                    style={styles.searchInput}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
-            </View>
-
-            {/* Crèche List */}
-            {loading ? (
-                <ActivityIndicator size="large" color="#3b82f6" style={styles.loader} />
-            ) : (
-                <FlatList
-                    data={filteredCrèches}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={[
-                                styles.crècheCard,
-                                selectedCrèche?.id === item.id && styles.selectedCrècheCard
-                            ]}
-                            onPress={() => setSelectedCrèche(item)}
-                        >
-                            <View style={styles.crècheInfo}>
-                                <Text style={styles.crècheName}>{item.name}</Text>
-                                <Text style={styles.crècheDetails}>
-                                    {item.district} • {item.distance} km away
-                                </Text>
-                            </View>
-                            {selectedCrèche?.id === item.id && (
-                                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                            )}
-                        </TouchableOpacity>
-                    )}
-                    ListEmptyComponent={
-                        <Text style={styles.emptyText}>No crèches found</Text>
-                    }
-                />
-            )}
-
-            {/* Transfer Reason */}
-            <TextInput
-                placeholder="Reason for transfer (optional)"
-                style={styles.reasonInput}
-                value={transferReason}
-                onChangeText={setTransferReason}
-                multiline
-            />
-
-            {/* Transfer Button */}
-            <TouchableOpacity
-                style={[
-                    styles.transferButton,
-                    (!selectedCrèche || loading) && styles.disabledButton
-                ]}
-                onPress={handleTransfer}
-                disabled={!selectedCrèche || loading}
-            >
-                {loading ? (
-                    <ActivityIndicator color="white" />
-                ) : (
-                    <Text style={styles.transferButtonText}>
-                        Confirm Transfer
+                {/* Transfer Summary */}
+                <RCol style={styles.summaryCard}>
+                    <Text style={styles.summaryText}>
+                        Transferring {childId.length} child{childId.length > 1 ? 'ren' : ''}
                     </Text>
+                </RCol>
+
+                {/* Search */}
+                <Searchbar
+                    placeholder='Search children...'
+                    value={searchQuery}
+                    onChangeText={(text: string): void => setSearchQuery(text)}
+                    style={{ backgroundColor: colors.primary[50], borderWidth: 0.1, borderColor: colors.gray[500], borderRadius: 8, marginBottom: 12, height: 60 }}
+                    mode='view'
+                    showDivider={false}
+                    traileringIcon={'filter'}
+                    elevation={0}
+                    onTraileringIconPress={() => setSearchQuery}
+                />
+
+                {/* Crèche List */}
+                {loading ? (
+                    <ActivityIndicator size="large" color="#3b82f6" style={styles.loader} />
+                ) : (
+                    <FlatList
+                        data={filteredCrèches}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <RTransferItem item={item} selectedCrèche={selectedCrèche} setSelectedCrèche={setSelectedCrèche} styles={styles} />
+                        )}
+                        ListEmptyComponent={
+                            <Text style={styles.emptyText}>No crèches found</Text>
+                        }
+                    />
                 )}
-            </TouchableOpacity>
-        </View>
+
+                {/* Transfer Reason */}
+                <RInput
+                    placeholder="Reason for transfer (optional)"
+                    value={transferReason}
+                    onChangeText={setTransferReason}
+                    multiline
+                />
+
+                {/* Transfer Button */}
+                <Button loading={loading} style={PickerStyle.btn} theme={{ colors: { primary: colors.primary[500] } }} mode='contained'>Confirm Transfer</Button>
+
+            </View>
+        </>
     );
 };
 
