@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { RAttendance } from '@/components/modules/application/stats'
 
 const ReportsScreen = () => {
     return (
-        <View>
-            <Text>ReportsScreen</Text>
-        </View>
+        <RAttendance />
     )
 }
 
