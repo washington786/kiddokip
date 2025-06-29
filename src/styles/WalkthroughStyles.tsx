@@ -62,7 +62,7 @@ export const WalkthroughStyles = StyleSheet.create({
         width: 24,
         height: 8,
         borderRadius: 8,
-        backgroundColor: colors.primary[400], // or your theme primary
+        backgroundColor: colors.primary[400],
     },
 
     footerControls: {

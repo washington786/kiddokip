@@ -9,6 +9,7 @@ import RLoader from "./RLoader";
 import RLogo from "./RLogo";
 import RNetworkAlert from "./RNetworkAlert";
 import RNotification from "./RNotification";
+import RPickerContainer from "./RPickerContainer";
 import RRow from "./RRow";
 import RServerError from "./RServerError";
 import RSplash from "./RSplash";
@@ -43,5 +44,6 @@ export {
   RKeyboardView,
   RRow,
   RCol,
-  RWrapperInput as RChildWrapper
+  RWrapperInput as RChildWrapper,
+  RPickerContainer
 };

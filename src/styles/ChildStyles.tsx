@@ -1,4 +1,5 @@
 import colors from '@/config/colors';
+import appFonts from '@/config/fonts';
 import { StyleSheet } from 'react-native'
 
 export const ChildStyles = StyleSheet.create({
@@ -15,9 +16,8 @@ export const ChildStyles = StyleSheet.create({
         marginBottom: 16,
     },
     title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#333',
+        color: colors.gray[600],
+        fontFamily: `${appFonts.bold}`
     },
     addButton: {
         backgroundColor: colors.primary[600],
@@ -166,7 +166,7 @@ export const ChildStyles = StyleSheet.create({
         marginBottom: 12,
     },
     batchFooter: {
-        padding: 16,
+        paddingVertical: 16,
         backgroundColor: 'white',
         borderTopWidth: 1,
         borderTopColor: colors.gray[100],

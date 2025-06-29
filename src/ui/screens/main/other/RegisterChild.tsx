@@ -1,41 +1,24 @@
 import React, { useState } from 'react';
 import {
     View,
-    Text,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
-    ScrollView,
     Alert,
-    Image,
     Platform,
-    ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import { RTopBar } from '@/components/modules/application/children';
 
-type Parent = {
-    id: string;
-    name: string;
-    contact: string;
-    relationship: string;
-};
+import { Button, Text as RNText } from "react-native-paper"
+import { RCol, RInput, RKeyboardView, RPickerContainer, Scroller } from '@/components/common';
+import colors from '@/config/colors';
+import { PickerStyle } from '@/styles';
+import { Parent } from '@/types/parent';
+import { relationshipOptions } from '@/utils/relationships';
 
-const relationshipOptions = [
-    'Mother',
-    'Father',
-    'Legal Guardian',
-    'Grandparent',
-    'Other Relative'
-];
 
-interface RegisterChildScreenProps {
-    navigation: StackNavigationProp<any>;
-}
-
-const RegisterChildScreen: React.FC<RegisterChildScreenProps> = ({ navigation }) => {
+const RegisterChildScreen = () => {
     // Child state
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -58,7 +41,6 @@ const RegisterChildScreen: React.FC<RegisterChildScreenProps> = ({ navigation })
 
     // UI state
     const [loading, setLoading] = useState(false);
-    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     // Calculate age from DOB
     const calculateAge = (dob: Date): number => {
@@ -106,38 +88,10 @@ const RegisterChildScreen: React.FC<RegisterChildScreenProps> = ({ navigation })
     };
 
     // Form validation
-    const validateForm = (): boolean => {
-        const errors: Record<string, string> = {};
 
-        if (!firstName.trim()) errors.firstName = 'First name is required';
-        if (!lastName.trim()) errors.lastName = 'Last name is required';
-
-        if (!idNumber) {
-            errors.idNumber = 'ID number is required';
-        } else if (!/^[0-9]{13}$/.test(idNumber)) {
-            errors.idNumber = 'Invalid ID number (must be 13 digits)';
-        }
-
-        const age = calculateAge(dateOfBirth);
-        if (age > 6) errors.dateOfBirth = 'Child must be 6 years or younger';
-        if (age < 0) errors.dateOfBirth = 'Invalid birth date';
-
-        parents.forEach((parent, index) => {
-            if (!parent.name.trim()) {
-                errors[`parentName_${parent.id}`] = `Parent ${index + 1} name is required`;
-            }
-            if (!parent.contact.trim()) {
-                errors[`parentContact_${parent.id}`] = `Parent ${index + 1} contact is required`;
-            }
-        });
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
 
     // Form submission
     const handleSubmit = async () => {
-        if (!validateForm()) return;
 
         setLoading(true);
         try {
@@ -171,11 +125,11 @@ const RegisterChildScreen: React.FC<RegisterChildScreenProps> = ({ navigation })
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             // On success
-            Alert.alert(
-                'Registration Successful',
-                `${firstName} ${lastName} has been registered`,
-                [{ text: 'OK', onPress: () => navigation.goBack() }]
-            );
+            // Alert.alert(
+            //     'Registration Successful',
+            //     `${firstName} ${lastName} has been registered`,
+            //     [{ text: 'OK', onPress: () => navigation.goBack() }]
+            // );
 
         } catch (error) {
             Alert.alert('Error', 'Failed to register child. Please try again.');
@@ -185,213 +139,65 @@ const RegisterChildScreen: React.FC<RegisterChildScreenProps> = ({ navigation })
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.title}>Register New Child</Text>
-                <View style={{ width: 24 }} />
-            </View>
+        <>
+            <RTopBar title='Register New Child' />
+            <Scroller style={styles.container}>
+                {/* Header */}
 
-            {/* Basic Information */}
-            <Text style={styles.sectionHeader}>Basic Information</Text>
+                {/* Basic Information */}
+                <RNText variant='titleMedium' style={{ paddingVertical: 8 }}>Basic Information</RNText>
 
-            <View style={styles.nameContainer}>
-                <View style={{ flex: 1, marginRight: 8 }}>
-                    <TextInput
-                        placeholder="First Name *"
-                        style={[
-                            styles.input,
-                            validationErrors.firstName && styles.inputError
-                        ]}
-                        value={firstName}
-                        onChangeText={text => {
-                            setFirstName(text);
-                            if (validationErrors.firstName) {
-                                setValidationErrors(prev => ({ ...prev, firstName: '' }));
-                            }
-                        }}
-                    />
-                    {validationErrors.firstName && (
-                        <Text style={styles.errorText}>{validationErrors.firstName}</Text>
-                    )}
-                </View>
+                <RKeyboardView style={{ paddingHorizontal: 0, marginHorizontal: 0 }}>
+                    <RCol>
+                        <RInput placeholder='First Name' />
+                        <RInput placeholder='Last Name' />
+                        <RInput placeholder='ID Number(13 digits)' />
+                        <RPickerContainer>
+                            <Picker>
+                                <Picker.Item value={''} label='Select Gender' />
+                                <Picker.Item value={'male'} label='Male' />
+                                <Picker.Item value={'female'} label='Female' />
+                                <Picker.Item value={'other'} label='Other' />
+                            </Picker>
+                        </RPickerContainer>
+                    </RCol>
 
-                <View style={{ flex: 1 }}>
-                    <TextInput
-                        placeholder="Last Name *"
-                        style={[
-                            styles.input,
-                            validationErrors.lastName && styles.inputError
-                        ]}
-                        value={lastName}
-                        onChangeText={text => {
-                            setLastName(text);
-                            if (validationErrors.lastName) {
-                                setValidationErrors(prev => ({ ...prev, lastName: '' }));
-                            }
-                        }}
-                    />
-                    {validationErrors.lastName && (
-                        <Text style={styles.errorText}>{validationErrors.lastName}</Text>
-                    )}
-                </View>
-            </View>
-
-            <TextInput
-                placeholder="ID Number (13 digits) *"
-                style={[
-                    styles.input,
-                    validationErrors.idNumber && styles.inputError
-                ]}
-                value={idNumber}
-                onChangeText={text => {
-                    setIdNumber(text);
-                    if (validationErrors.idNumber) {
-                        setValidationErrors(prev => ({ ...prev, idNumber: '' }));
+                    {/* Parents/Guardians Section */}
+                    <RNText variant='titleMedium' style={{ paddingVertical: 6 }}>Parents/Guardian</RNText>
+                    {
+                        parents.map((parent) => (
+                            <View style={styles.parentCard} key={parent.id}>
+                                <RCol >
+                                    <RPickerContainer>
+                                        <Picker>
+                                            {
+                                                relationshipOptions.map((relationship) => <Picker.Item label={relationship} key={relationship} value={relationship} />)
+                                            }
+                                        </Picker>
+                                    </RPickerContainer>
+                                    {parents.length > 1 && (
+                                        <TouchableOpacity onPress={() => removeParent(parent.id)}>
+                                            <Ionicons name="close-circle" size={24} color={colors.red[700]} />
+                                        </TouchableOpacity>
+                                    )}
+                                    <RInput placeholder={`${parent.relationship} Name`} />
+                                    <RInput placeholder={`${parent.relationship} Contact`} />
+                                </RCol>
+                            </View>
+                        ))
                     }
-                }}
-                keyboardType="numeric"
-                maxLength={13}
-            />
-            {validationErrors.idNumber && (
-                <Text style={styles.errorText}>{validationErrors.idNumber}</Text>
-            )}
+                    <Button onPress={addParent} mode='outlined' style={[PickerStyle.btn, PickerStyle.outline]} theme={{ colors: { primary: colors.primary[500] } }} icon={'plus'}>Add Another Parent/Guardian</Button>
 
-            <TouchableOpacity
-                style={[
-                    styles.input,
-                    validationErrors.dateOfBirth && styles.inputError
-                ]}
-                onPress={() => setShowDatePicker(true)}
-            >
-                <Text style={dateOfBirth ? styles.inputText : styles.placeholderText}>
-                    {dateOfBirth ? dateOfBirth.toLocaleDateString() : 'Date of Birth *'}
-                </Text>
-                <Ionicons name="calendar" size={20} color="#9ca3af" />
-            </TouchableOpacity>
-            {validationErrors.dateOfBirth && (
-                <Text style={styles.errorText}>{validationErrors.dateOfBirth}</Text>
-            )}
+                    {/* Medical Information */}
+                    <RNText variant='titleMedium' style={{ paddingVertical: 6 }}>Medical Information</RNText>
+                    <RInput placeholder='Allergies, conditions, etc. (optional)' value={medicalNotes} onChangeText={setMedicalNotes} multiline={true} style={{ minHeight: 200 }} />
 
-            {showDatePicker && (
-                <DateTimePicker
-                    value={dateOfBirth}
-                    mode="date"
-                    display="default"
-                    maximumDate={new Date()}
-                    onChange={onDateChange}
-                />
-            )}
+                    {/* Submit Button */}
+                    <Button loading={loading} mode='contained' theme={{ colors: { background: colors.primary[800] } }} onPress={handleSubmit} style={PickerStyle.btn}>Register Child</Button>
+                </RKeyboardView>
 
-            <View style={styles.genderContainer}>
-                {['Male', 'Female', 'Other'].map((option) => (
-                    <TouchableOpacity
-                        key={option}
-                        style={[
-                            styles.genderOption,
-                            gender === option && styles.selectedGenderOption
-                        ]}
-                        onPress={() => setGender(option as any)}
-                    >
-                        <Text style={gender === option ? styles.selectedGenderText : styles.genderText}>
-                            {option}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-
-            {/* Parents/Guardians Section */}
-            <Text style={styles.sectionHeader}>Parents/Guardians</Text>
-
-            {parents.map((parent) => (
-                <View key={parent.id} style={styles.parentCard}>
-                    <View style={styles.parentHeader}>
-                        <Picker
-                            selectedValue={parent.relationship}
-                            style={styles.relationshipPicker}
-                            onValueChange={(value) => updateParent(parent.id, 'relationship', value)}
-                        >
-                            {relationshipOptions.map(option => (
-                                <Picker.Item key={option} label={option} value={option} />
-                            ))}
-                        </Picker>
-                        {parents.length > 1 && (
-                            <TouchableOpacity onPress={() => removeParent(parent.id)}>
-                                <Ionicons name="close-circle" size={24} color="#ef4444" />
-                            </TouchableOpacity>
-                        )}
-                    </View>
-
-                    <TextInput
-                        placeholder={`${parent.relationship} Name *`}
-                        style={[
-                            styles.input,
-                            validationErrors[`parentName_${parent.id}`] && styles.inputError
-                        ]}
-                        value={parent.name}
-                        onChangeText={(text) => {
-                            updateParent(parent.id, 'name', text);
-                            if (validationErrors[`parentName_${parent.id}`]) {
-                                setValidationErrors(prev => ({ ...prev, [`parentName_${parent.id}`]: '' }));
-                            }
-                        }}
-                    />
-                    {validationErrors[`parentName_${parent.id}`] && (
-                        <Text style={styles.errorText}>{validationErrors[`parentName_${parent.id}`]}</Text>
-                    )}
-
-                    <TextInput
-                        placeholder="Contact Number *"
-                        style={[
-                            styles.input,
-                            validationErrors[`parentContact_${parent.id}`] && styles.inputError
-                        ]}
-                        value={parent.contact}
-                        onChangeText={(text) => {
-                            updateParent(parent.id, 'contact', text);
-                            if (validationErrors[`parentContact_${parent.id}`]) {
-                                setValidationErrors(prev => ({ ...prev, [`parentContact_${parent.id}`]: '' }));
-                            }
-                        }}
-                        keyboardType="phone-pad"
-                    />
-                    {validationErrors[`parentContact_${parent.id}`] && (
-                        <Text style={styles.errorText}>{validationErrors[`parentContact_${parent.id}`]}</Text>
-                    )}
-                </View>
-            ))}
-
-            <TouchableOpacity style={styles.addParentButton} onPress={addParent}>
-                <Ionicons name="add" size={20} color="#3b82f6" />
-                <Text style={styles.addParentText}>Add Another Parent/Guardian</Text>
-            </TouchableOpacity>
-
-            {/* Medical Information */}
-            <Text style={styles.sectionHeader}>Medical Information</Text>
-            <TextInput
-                placeholder="Allergies, conditions, etc. (optional)"
-                style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-                value={medicalNotes}
-                onChangeText={setMedicalNotes}
-                multiline
-            />
-
-            {/* Submit Button */}
-            <TouchableOpacity
-                style={[styles.submitButton, loading && styles.disabledButton]}
-                onPress={handleSubmit}
-                disabled={loading}
-            >
-                {loading ? (
-                    <ActivityIndicator color="white" />
-                ) : (
-                    <Text style={styles.submitButtonText}>Register Child</Text>
-                )}
-            </TouchableOpacity>
-        </ScrollView>
+            </Scroller>
+        </>
     );
 };
 

@@ -4,25 +4,24 @@ import {
     Text,
     FlatList,
     TouchableOpacity,
-    StyleSheet,
-    TextInput,
     RefreshControl,
-    ListRenderItem,
-    ViewStyle,
-    TextStyle
+    ListRenderItem
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import useTransition from '@/hooks/navigation/useTransition';
 import { Text as RNText, Searchbar } from "react-native-paper"
 import colors from '@/config/colors';
-import { ChildStatus, Gender, StatusFilter } from '@/types/child';
+import { StatusFilter } from '@/types/child';
 import RStatusFilter from './RStatusFilter';
 import RChildItem from './RChildItem';
 import { ChildStyles as styles } from '@/styles';
 import { Child as IChild } from '@/interfaces/IChild';
+import { RButton } from '@/components/common';
+import RChildHeader from './RChildHeader';
+import REmptyChildList from './REmptyChildList';
 
 const Child = () => {
-    const { goToTransferChild, goToChildProfile, goToRegisterChild } = useTransition();
+    const { goToTransferChild, goToRegisterChild } = useTransition();
     // State with TypeScript types
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [activeFilter, setActiveFilter] = useState<StatusFilter>('All');
@@ -106,19 +105,11 @@ const Child = () => {
             {/* Header with batch actions */}
             <View style={styles.header}>
                 {selectedChildren.length > 0 ? (
-                    <View style={styles.batchHeader}>
-                        <TouchableOpacity onPress={(): void => setSelectedChildren([])}>
-                            <Ionicons name="close" size={24} color="#333" />
-                        </TouchableOpacity>
-                        <Text style={styles.batchTitle}>{selectedChildren.length} selected</Text>
-                        <TouchableOpacity onPress={handleBatchTransfer}>
-                            <MaterialIcons name="transfer-within-a-station" size={24} color="#3b82f6" />
-                        </TouchableOpacity>
-                    </View>
+                    <RChildHeader handleBatchTransfer={handleBatchTransfer} selectedChildren={selectedChildren} setSelectedChildren={setSelectedChildren} styles={styles} />
                 ) : (
                     <>
                         {/* <Text style={styles.title}>Children Management</Text> */}
-                        <RNText variant='headlineSmall'>Children Management</RNText>
+                        <RNText variant='headlineSmall' style={styles.title}>Children Management</RNText>
                         <TouchableOpacity
                             style={styles.addButton}
                             onPress={goToRegisterChild}
@@ -145,7 +136,6 @@ const Child = () => {
             {showAgeFilter && (
                 <View style={styles.ageFilterContainer}>
                     <Text>Age Range: {ageRange[0]} - {ageRange[1]} years</Text>
-                    {/* Implement your range slider here */}
                 </View>
             )}
 
@@ -164,26 +154,13 @@ const Child = () => {
                     />
                 }
                 renderItem={renderItem}
-                ListEmptyComponent={
-                    <View style={styles.emptyContainer}>
-                        <Ionicons name="people-outline" size={48} color={colors.slate[200]} />
-                        <Text style={styles.emptyText}>No children found</Text>
-                        <Text style={styles.emptySubtext}>Try adjusting your filters</Text>
-                    </View>
-                }
+                ListEmptyComponent={REmptyChildList}
             />
 
             {/* Batch Action Footer */}
             {selectedChildren.length > 0 && (
                 <View style={styles.batchFooter}>
-                    <TouchableOpacity
-                        style={styles.batchButton}
-                        onPress={handleBatchTransfer}
-                    >
-                        <Text style={styles.batchButtonText}>
-                            Transfer Selected ({selectedChildren.length})
-                        </Text>
-                    </TouchableOpacity>
+                    <RButton onPressButton={handleBatchTransfer} title={`Transfer Selected (${selectedChildren.length})`} styleBtn={styles.batchButton} styleTitle={styles.batchButtonText} />
                 </View>
             )}
         </View>
