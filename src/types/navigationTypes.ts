@@ -8,4 +8,15 @@ export type navigationTypes = {
     profile: undefined;
     children: undefined;
     app: undefined;
+    RegisterChild: undefined;
+    ChildProfile: {
+        childId: string
+    };
+    EditChild: {
+        childId: string
+    };
+    TransferChildren: {
+        childId: string[],
+        currentCrecheId?: string
+    }
 }

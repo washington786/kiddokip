@@ -33,7 +33,23 @@ const useTransition = () => {
         navigation.navigate("app");
     }
 
-    return { onBack, login, register, walkthrough, getStarted, createCreche, goToApp }
+    function goToRegisterChild() {
+        navigation.navigate("RegisterChild");
+    }
+
+    function goToTransferChild({ childId, currentCrecheId }: { childId: string[], currentCrecheId: string }) {
+        navigation.navigate("TransferChildren", { childId, currentCrecheId });
+    }
+
+    function goToEditChild({ childId }: { childId: string }) {
+        navigation.navigate("EditChild", { childId: childId });
+    }
+
+    function goToChildProfile({ childId }: { childId: string }) {
+        navigation.navigate("ChildProfile", { childId: childId });
+    }
+
+    return { onBack, login, register, walkthrough, getStarted, createCreche, goToApp, goToChildProfile, goToEditChild, goToRegisterChild, goToTransferChild }
 }
 
 export default useTransition
